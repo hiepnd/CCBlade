@@ -1,1 +1,6 @@
-Hello world !
+Streak texture:
+- Texture size 128 x 16
+- Fisrt 32 x 16 is mapped to the head of the blade
+- Next 32 x 16 is mapped to the body
+- Next 32 x 16 is mapped to the tail
+- Last 32 x 16 is unused
