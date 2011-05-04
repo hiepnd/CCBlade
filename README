@@ -6,3 +6,8 @@ Streak texture:
 - Next 32 x 16 is mapped to the body
 - Next 32 x 16 is mapped to the tail
 - Last 32 x 16 is unused
+
+USAGE NOTICE:
+- CCBlade.m, TouchTrailLayer.m and all .m file that use CCBlade or TouchTrailLayer should
+have the File Type of sourcecode.cpp.objcpp (right click .m file in Xcode go to first tab and under
+File Type drop down list choose the right option)
