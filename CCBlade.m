@@ -169,7 +169,9 @@ inline void CGPointSet(CGPoint *v, float x, float y){
 - (void) pop{
 	if (path.size() > 0) {
 		path.pop_back();
-		[self populateVertices];
+		if (path.size() > 3) {
+			[self populateVertices];
+		}
 	}
 }
 
@@ -187,7 +189,7 @@ inline void CGPointSet(CGPoint *v, float x, float y){
 }
 
 - (void) draw{
-	if (reset) {
+	if (reset && path.size() > 0) {
 		[self pop];
 		if (path.size() < 3) {
 			[self clear];
