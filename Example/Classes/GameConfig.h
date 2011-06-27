@@ -22,7 +22,7 @@
 //
 // Define here the type of autorotation that you want for your game
 //
-#define GAME_AUTOROTATION kGameAutorotationUIViewController
+#define GAME_AUTOROTATION kGameAutorotationCCDirector
 
 
 #endif // __GAME_CONFIG_H

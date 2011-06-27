@@ -73,33 +73,30 @@ inline void CGPointSet(CGPoint *v, float x, float y){
 	width = 6;
 	
 	self.texture = [[CCTextureCache sharedTextureCache] addImage:@"streak.png"];
-	
+    
+#if !USE_STL_LIST
+    path = [[NSMutableArray alloc] init];
+#endif
 	return self;
 }
 
 - (void) dealloc{
-	[_texture release];
+    [_texture release];
+#if !USE_STL_LIST
+    [path release];	
+#endif
 	[super dealloc];
 }
 
 - (void) populateVertices{
+#if USE_STL_LIST
 	list<CGPoint>::iterator it=path.begin();
 	vertices[0] = *it;
 	it++;
 	
-	//[self shift];
-//	int index = 2 * pointLimit - 1;
-//	for (int i = index; i > 3; i -= 2) {
-//		vertices[i] = vertices[i-2];
-//		vertices[i-1] = vertices[i-3];
-//	}
-//	
-	
 	CGPoint pre = vertices[0];
-//	f1(pre, *it, d - i * dd , vertices+2*i+1, vertices+2*i+2);
 	
 	unsigned int i = 0;
-	//float d = 16.;
 	float dd = width / path.size();
 	while (i < path.size() - 2){
 		f1(pre, *it, width - i * dd , vertices+2*i+1, vertices+2*i+2);
@@ -117,6 +114,30 @@ inline void CGPointSet(CGPoint *v, float x, float y){
 	
 	vertices[2*path.size()-3] = *it;
 	CGPointSet(coordinates+2*path.size()-3, 0.75, 0.5);
+#else
+    vertices[0] = [[path objectAtIndex:0] CGPointValue];
+    CGPoint pre = vertices[0];
+    
+    unsigned int i = 0;
+    CGPoint it = [[path objectAtIndex:1] CGPointValue];
+	float dd = width / [path count];
+	while (i < [path count] - 2){
+		f1(pre, it, width - i * dd , vertices+2*i+1, vertices+2*i+2);
+		CGPointSet(coordinates+2*i+1, .5, 1.0);
+		CGPointSet(coordinates+2*i+2, .5, 0.0);
+		
+		i++;
+		pre = it;
+		
+		it = [[path objectAtIndex:i+1] CGPointValue];
+	}
+    
+    CGPointSet(coordinates+1, 0.25, 1.0); 
+	CGPointSet(coordinates+2, 0.25, 0.0);
+	
+	vertices[2*[path count]-3] = it;
+	CGPointSet(coordinates+2*[path count]-3, 0.75, 0.5);
+#endif
 }
 
 - (void) shift{
@@ -133,11 +154,14 @@ inline void CGPointSet(CGPoint *v, float x, float y){
 	if (reset) {
 		return;
 	}
+
 #if USE_LAGRANGE
+#if USE_STL_LIST
 	if (path.size() == 0) {
 		path.push_front(v);
 		return;
 	}
+
 	CGPoint first = *path.begin();
 	float d = ccpDistance(v, first);
 	if (d < DISTANCE_TO_INTERPOLATE) {
@@ -151,32 +175,68 @@ inline void CGPointSet(CGPoint *v, float x, float y){
 		for (int i = 1; i <= num + 1; i++) {
 			path.push_front(ccpAdd(first, ccpMult(iv, i)));
 		}
-		//path.push_front(v);
 		while (path.size() > pointLimit) {
 			path.pop_back();
 		}
 	}
-#else
+#else //of USE_STL_LIST
+    if ([path count] == 0) {
+        [path insertObject:[NSValue valueWithCGPoint:v] atIndex:0];
+        return;
+    }
+    
+    CGPoint first = [[path objectAtIndex:0] CGPointValue];
+    if (ccpDistance(v, first) < DISTANCE_TO_INTERPOLATE) {
+        [path insertObject:[NSValue valueWithCGPoint:v] atIndex:0];
+        if ([path count] > pointLimit) {
+            [path removeLastObject];
+        }
+    }else{
+        int num = ccpDistance(v, first) / DISTANCE_TO_INTERPOLATE;
+        CGPoint iv = ccpMult(ccpSub(v, first), (float)1./(num + 1));
+		for (int i = 1; i <= num + 1; i++) {
+            [path insertObject:[NSValue valueWithCGPoint:ccpAdd(first, ccpMult(iv, i))] atIndex:0];
+		}
+		while ([path count] > pointLimit) {
+			[path removeLastObject];
+		}
+    }
+#endif //of USE_STL_LIST
+#else //of USE_LAGRANGE
 	path.push_front(v);
 	if (path.size() > pointLimit) {
 		path.pop_back();
 	}
-#endif
+#endif //of USE_LAGRANGE
+
 	
 	[self populateVertices];
 }
 
 - (void) pop{
+#if USE_STL_LIST
 	if (path.size() > 0) {
 		path.pop_back();
 		if (path.size() > 3) {
 			[self populateVertices];
 		}
 	}
+#else
+    if ([path count] > 0) {
+        [path removeLastObject];
+        if ([path count] > 0) {
+            [self populateVertices];
+        }
+    }
+#endif
 }
 
 - (void) clear{
+#if USE_STL_LIST
 	path.clear();
+#else
+    [path removeAllObjects];
+#endif
 	reset = NO;
 } 
 
@@ -189,6 +249,7 @@ inline void CGPointSet(CGPoint *v, float x, float y){
 }
 
 - (void) draw{
+#if USE_STL_LIST
 	if (reset && path.size() > 0) {
 		[self pop];
 		if (path.size() < 3) {
@@ -199,6 +260,18 @@ inline void CGPointSet(CGPoint *v, float x, float y){
 	if (path.size() < 3) {
 		return;
 	}
+#else
+    if (reset && [path count] > 0) {
+        [self pop];
+        if ([path count] < 3) {
+            [self clear];
+        }
+    }
+    
+    if ([path count] < 3) {
+        return;
+    }
+#endif
 	
 	glPushMatrix();
     glDisableClientState(GL_COLOR_ARRAY);
@@ -206,8 +279,11 @@ inline void CGPointSet(CGPoint *v, float x, float y){
     glBindTexture(GL_TEXTURE_2D, _texture.name);
     glVertexPointer(2, GL_FLOAT, 0, vertices);
     glTexCoordPointer(2, GL_FLOAT, 0, coordinates);
+#if USE_STL_LIST
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 2*path.size()-2);
-    
+#else
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 2*[path count]-2);
+#endif
 	glEnableClientState(GL_COLOR_ARRAY);
     glPopMatrix();	
 }

@@ -14,15 +14,18 @@
 - (id) init{
 	self = [super init];
 	isTouchEnabled_ = 1;
-	
+    map = CFDictionaryCreateMutable(NULL,0,NULL,NULL);
 	return self;
 }
 
 - (void) ccTouchesBegan:(NSSet *) touches withEvent:(UIEvent *) event{
 	for (UITouch *touch in touches) {
 		CCBlade *w = [CCBlade node];
-		ws[touch] = w;
-		w.texture = [[CCTextureCache sharedTextureCache] addImage:@"streak3.png"];
+        int rand = arc4random() % 3 + 1;
+		w.texture = [[CCTextureCache sharedTextureCache] addImage:[NSString stringWithFormat:@"streak%d.png",rand]];
+        
+        CFDictionaryAddValue(map,touch,w);
+        
 		[self addChild:w];
 		CGPoint pos = [touch locationInView:touch.view];
 		pos = [[CCDirector sharedDirector] convertToGL:pos];
@@ -32,7 +35,7 @@
 
 - (void) ccTouchesMoved:(NSSet *) touches withEvent:(UIEvent *) event{
 	for (UITouch *touch in touches) {
-		CCBlade *w = ws[touch];
+		CCBlade *w = (CCBlade *)CFDictionaryGetValue(map, touch);
 		CGPoint pos = [touch locationInView:touch.view];
 		pos = [[CCDirector sharedDirector] convertToGL:pos];
 		[w push:pos];
@@ -41,9 +44,14 @@
 
 - (void) ccTouchesEnded:(NSSet *) touches withEvent:(UIEvent *) event{
 	for (UITouch *touch in touches) {
-		CCBlade *w = ws[touch];
+		CCBlade *w = (CCBlade *)CFDictionaryGetValue(map, touch);
 		[w dim:YES];
-		ws.erase(touch);
+        CFDictionaryRemoveValue(map,touch);
 	}
+}
+
+- (void) dealloc{
+    CFRelease(map);
+    [super dealloc];
 }
 @end

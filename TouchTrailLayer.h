@@ -9,17 +9,9 @@
 #import <Foundation/Foundation.h>
 #import "cocos2d.h"
 #import "CCBlade.h"
-#import <map>
-
-
-using namespace std;
-
-#define MAX_FINGERS 10
 
 @interface TouchTrailLayer : CCLayer {
-	//W *ws[MAX_FINGERS];
-	//CFDictionaryRef touch;
-	map<UITouch *,CCBlade *> ws;
+    CFMutableDictionaryRef map;
 }
 
 @end

@@ -11,7 +11,7 @@
 		1F3B9A2D0EF2145700286867 /* ExampleAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1F3B9A2B0EF2145700286867 /* ExampleAppDelegate.m */; };
 		47B71D60137130530008113A /* CCBlade.m in Sources */ = {isa = PBXBuildFile; fileRef = 47B71D5D137130530008113A /* CCBlade.m */; };
 		47B71D61137130530008113A /* TouchTrailLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 47B71D5F137130530008113A /* TouchTrailLayer.m */; };
-		47B71D65137130680008113A /* streak.png in Resources */ = {isa = PBXBuildFile; fileRef = 47B71D62137130680008113A /* streak.png */; };
+		47B71D65137130680008113A /* streak1.png in Resources */ = {isa = PBXBuildFile; fileRef = 47B71D62137130680008113A /* streak1.png */; };
 		47B71D66137130680008113A /* streak2.png in Resources */ = {isa = PBXBuildFile; fileRef = 47B71D63137130680008113A /* streak2.png */; };
 		47B71D67137130680008113A /* streak3.png in Resources */ = {isa = PBXBuildFile; fileRef = 47B71D64137130680008113A /* streak3.png */; };
 		504DFBCE10AF12E9006D82FE /* CLScoreServerPost.h in Headers */ = {isa = PBXBuildFile; fileRef = 504DFBC810AF12E9006D82FE /* CLScoreServerPost.h */; };
@@ -272,7 +272,7 @@
 		47B71D5D137130530008113A /* CCBlade.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; name = CCBlade.m; path = ../../CCBlade.m; sourceTree = "<group>"; };
 		47B71D5E137130530008113A /* TouchTrailLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TouchTrailLayer.h; path = ../../TouchTrailLayer.h; sourceTree = "<group>"; };
 		47B71D5F137130530008113A /* TouchTrailLayer.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; name = TouchTrailLayer.m; path = ../../TouchTrailLayer.m; sourceTree = "<group>"; };
-		47B71D62137130680008113A /* streak.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = streak.png; path = ../../streak.png; sourceTree = "<group>"; };
+		47B71D62137130680008113A /* streak1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = streak1.png; path = ../../streak1.png; sourceTree = "<group>"; };
 		47B71D63137130680008113A /* streak2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = streak2.png; path = ../../streak2.png; sourceTree = "<group>"; };
 		47B71D64137130680008113A /* streak3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = streak3.png; path = ../../streak3.png; sourceTree = "<group>"; };
 		504DFBC810AF12E9006D82FE /* CLScoreServerPost.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CLScoreServerPost.h; sourceTree = "<group>"; };
@@ -289,7 +289,7 @@
 		506EDB87102F4C4000A389B3 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		506EDBA4102F4C9F00A389B3 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		506EDC2F102F528A00A389B3 /* HelloWorldScene.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HelloWorldScene.h; sourceTree = "<group>"; };
-		506EDC30102F528A00A389B3 /* HelloWorldScene.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = HelloWorldScene.m; sourceTree = "<group>"; };
+		506EDC30102F528A00A389B3 /* HelloWorldScene.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HelloWorldScene.m; sourceTree = "<group>"; };
 		506EE05E10304ED200A389B3 /* libcocos2d libraries.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libcocos2d libraries.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		507ED63311C638C6002ED3FC /* CDAudioManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CDAudioManager.h; sourceTree = "<group>"; };
 		507ED63411C638C6002ED3FC /* CDAudioManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CDAudioManager.m; sourceTree = "<group>"; };
@@ -719,7 +719,7 @@
 		50F414EB1069373D002A0D5E /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				47B71D62137130680008113A /* streak.png */,
+				47B71D62137130680008113A /* streak1.png */,
 				47B71D63137130680008113A /* streak2.png */,
 				47B71D64137130680008113A /* streak3.png */,
 				E02BB762126CC1E0006E46A2 /* iTunesArtwork */,
@@ -1140,7 +1140,7 @@
 				E02BB507126CA50F006E46A2 /* Icon-Small-50.png in Resources */,
 				E02BB508126CA50F006E46A2 /* Icon-72.png in Resources */,
 				E02BB763126CC1E0006E46A2 /* iTunesArtwork in Resources */,
-				47B71D65137130680008113A /* streak.png in Resources */,
+				47B71D65137130680008113A /* streak1.png in Resources */,
 				47B71D66137130680008113A /* streak2.png in Resources */,
 				47B71D67137130680008113A /* streak3.png in Resources */,
 			);
@@ -1281,6 +1281,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Ngo Duc Hiep (3Y8Y29F642)";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -1291,12 +1292,10 @@
 				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
 				INFOPLIST_FILE = Resources/Info.plist;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_LDFLAGS = (
-					"-all_load",
-					"-ObjC",
-				);
+				OTHER_LDFLAGS = "";
 				PREBINDING = NO;
 				PRODUCT_NAME = Example;
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "59CB115E-0A0A-489C-B9E1-B64F93B57344";
 				WARNING_CFLAGS = "-Wall";
 			};
 			name = Debug;
@@ -1305,6 +1304,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Ngo Duc Hiep (3Y8Y29F642)";
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
@@ -1319,6 +1319,7 @@
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = Example;
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "59CB115E-0A0A-489C-B9E1-B64F93B57344";
 				WARNING_CFLAGS = "-Wall";
 			};
 			name = Release;

@@ -8,13 +8,17 @@
 
 #import <Foundation/Foundation.h>
 #import "cocos2d.h"
-#include <list>
 
-#define POINT_LIMIT 50
-#define USE_LAGRANGE 1
+#define POINT_LIMIT     50
+#define USE_LAGRANGE    1
+#define USE_STL_LIST    0
 
-using namespace std;
+//#if USE_STL_LIST
+//#include <list>
+//using namespace std;
+//#enif
 
+inline float fangle(CGPoint vect);
 inline float lagrange2(CGPoint p1, CGPoint p2, CGPoint p3, float x);
 inline float lagrange1(CGPoint p1, CGPoint p2, float x);
 
@@ -23,7 +27,11 @@ inline void f1(CGPoint p1, CGPoint p2, float d, CGPoint *o1, CGPoint *o2);
 inline void f2(CGPoint p1, CGPoint p2, float d, CGPoint *o1, CGPoint *o2);
 
 @interface CCBlade : CCNode {
+#if USE_STL_LIST
 	list<CGPoint> path;
+#else
+    NSMutableArray *path;
+#endif
 	unsigned int pointLimit;
 	int count;
 	CGPoint vertices[2*POINT_LIMIT + 5];
