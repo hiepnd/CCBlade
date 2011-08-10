@@ -37,7 +37,7 @@
 
 - (void) ccTouchesBegan:(NSSet *) touches withEvent:(UIEvent *) event{
 	for (UITouch *touch in touches) {
-		CCBlade *w = [CCBlade node];
+		CCBlade *w = [CCBlade bladeWithMaximumPoint:50];
         int rand = arc4random() % 3 + 1;
 		w.texture = [[CCTextureCache sharedTextureCache] addImage:[NSString stringWithFormat:@"streak%d.png",rand]];
         

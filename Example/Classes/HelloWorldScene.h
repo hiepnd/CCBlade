@@ -9,10 +9,12 @@
 
 // When you import this file, you import all the cocos2d classes
 #import "cocos2d.h"
+#import "CCMissible.h"
 
 // HelloWorld Layer
 @interface HelloWorld : CCLayer
 {
+    CCMissible *m;
 }
 
 // returns a Scene that contains the HelloWorld as the only child

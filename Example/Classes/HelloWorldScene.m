@@ -44,14 +44,24 @@
         bg.rotation = 90;
         [self addChild:bg];
         
+        self.isTouchEnabled = YES ;
 		
         TouchTrailLayer *layer = [TouchTrailLayer node];
 		[self addChild:layer];
 	}
 	
-	
+//	m = [[CCMissible alloc] initWithPointCount:5];
+//    m.texture = [[CCTextureCache sharedTextureCache] addImage:@"beam1.png"];
+//    [self addChild:m];
 	
 	return self;
+}
+
+- (void) ccTouchesMoved:(NSSet *)touches withEvent:(UIEvent *)event{
+    UITouch *t = [touches anyObject];
+    CGPoint p = [t locationInView:[t view]];
+    p = [[CCDirector sharedDirector] convertToGL:p];
+    [m updatePosition:p];    
 }
 
 // on "dealloc" you need to release all your retained objects

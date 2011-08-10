@@ -26,43 +26,33 @@
 #import <Foundation/Foundation.h>
 #import "cocos2d.h"
 
-#define POINT_LIMIT     50
 #define USE_LAGRANGE    1
 #define USE_STL_LIST    0
 
-//#if USE_STL_LIST
-//#include <list>
-//using namespace std;
-//#enif
-
 inline float fangle(CGPoint vect);
-inline float lagrange2(CGPoint p1, CGPoint p2, CGPoint p3, float x);
 inline float lagrange1(CGPoint p1, CGPoint p2, float x);
 
 inline void CGPointSet(CGPoint *v, float x, float y);
 inline void f1(CGPoint p1, CGPoint p2, float d, CGPoint *o1, CGPoint *o2);
-inline void f2(CGPoint p1, CGPoint p2, float d, CGPoint *o1, CGPoint *o2);
 
 @interface CCBlade : CCNode {
-#if USE_STL_LIST
-	list<CGPoint> path;
-#else
     NSMutableArray *path;
-#endif
 	unsigned int pointLimit;
 	int count;
-	CGPoint vertices[2*POINT_LIMIT + 5];
-	CGPoint coordinates[2*POINT_LIMIT + 5];
+	CGPoint *vertices;
+	CGPoint *coordinates;
 	BOOL reset;
-	@protected
 	CCTexture2D *_texture;	
 	float width;
 }
-@property unsigned int pointLimit;
+@property (readonly)unsigned int pointLimit;
 @property(retain) CCTexture2D *texture;
-@property float width;
+@property(nonatomic) float width;
+
++ (id) bladeWithMaximumPoint:(int) limit;
+- (id) initWithMaximumPoint:(int) limit;
 - (void) push:(CGPoint) v;
-- (void) pop;
+- (void) pop:(int) n;
 - (void) clear;
 - (void) reset;
 - (void) dim:(BOOL) dim;
