@@ -25,13 +25,25 @@
 
 #import "TouchTrailLayer.h"
 
+void releaseBlade(CFAllocatorRef allocator, const void *value)
+{
+    [(CCBlade*)value finish];
+}
+
+CFDictionaryValueCallBacks valueCallbacks = {
+    0,
+    NULL,
+    releaseBlade,
+    NULL,
+    NULL
+};
 
 @implementation TouchTrailLayer
 
 - (id) init{
 	self = [super init];
 	isTouchEnabled_ = 1;
-    map = CFDictionaryCreateMutable(NULL,0,NULL,NULL);
+    map = CFDictionaryCreateMutable(NULL,0,NULL,&valueCallbacks);
 	return self;
 }
 

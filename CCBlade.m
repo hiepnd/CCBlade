@@ -189,6 +189,8 @@ inline void CGPointSet(CGPoint *v, float x, float y){
 - (void) clear{
     [path removeAllObjects];
 	reset = NO;
+    if (_finish)
+        [self removeFromParentAndCleanup:YES];
 } 
 
 - (void) reset{
@@ -220,4 +222,10 @@ inline void CGPointSet(CGPoint *v, float x, float y){
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 2*[path count]-2);
 	glEnableClientState(GL_COLOR_ARRAY);
 }
+
+- (void) finish
+{
+    _finish = YES;
+}
+
 @end

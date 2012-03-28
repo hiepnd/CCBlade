@@ -44,6 +44,7 @@ inline void f1(CGPoint p1, CGPoint p2, float d, CGPoint *o1, CGPoint *o2);
 	BOOL reset;
 	CCTexture2D *_texture;	
 	float width;
+    BOOL _finish;
 }
 @property (readonly)unsigned int pointLimit;
 @property(retain) CCTexture2D *texture;
@@ -56,4 +57,5 @@ inline void f1(CGPoint p1, CGPoint p2, float d, CGPoint *o1, CGPoint *o2);
 - (void) clear;
 - (void) reset;
 - (void) dim:(BOOL) dim;
+- (void) finish;
 @end
