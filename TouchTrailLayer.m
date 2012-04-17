@@ -25,19 +25,32 @@
 
 #import "TouchTrailLayer.h"
 
+void releaseBlade(CFAllocatorRef allocator, const void *value)
+{
+    [(CCBlade*)value finish];
+}
+
+CFDictionaryValueCallBacks valueCallbacks = {
+    0,
+    NULL,
+    releaseBlade,
+    NULL,
+    NULL
+};
 
 @implementation TouchTrailLayer
 
 - (id) init{
 	self = [super init];
 	isTouchEnabled_ = 1;
-    map = CFDictionaryCreateMutable(NULL,0,NULL,NULL);
+    map = CFDictionaryCreateMutable(NULL,0,NULL,&valueCallbacks);
 	return self;
 }
 
 - (void) ccTouchesBegan:(NSSet *) touches withEvent:(UIEvent *) event{
 	for (UITouch *touch in touches) {
 		CCBlade *w = [CCBlade bladeWithMaximumPoint:50];
+        w.autoDim = YES;
         int rand = arc4random() % 3 + 1;
 		w.texture = [[CCTextureCache sharedTextureCache] addImage:[NSString stringWithFormat:@"streak%d.png",rand]];
         

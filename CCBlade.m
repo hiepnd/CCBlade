@@ -63,6 +63,7 @@ inline void CGPointSet(CGPoint *v, float x, float y){
 @synthesize texture = _texture;
 @synthesize pointLimit;
 @synthesize width;
+@synthesize autoDim;
 
 + (id) bladeWithMaximumPoint:(int) limit{
     return [[[self alloc] initWithMaximumPoint:limit] autorelease];    
@@ -134,6 +135,8 @@ inline void CGPointSet(CGPoint *v, float x, float y){
 #define DISTANCE_TO_INTERPOLATE 10
 
 - (void) push:(CGPoint) v{
+    _willPop = NO;
+    
 	if (reset) {
 		return;
 	}
@@ -189,6 +192,8 @@ inline void CGPointSet(CGPoint *v, float x, float y){
 - (void) clear{
     [path removeAllObjects];
 	reset = NO;
+    if (_finish)
+        [self removeFromParentAndCleanup:YES];
 } 
 
 - (void) reset{
@@ -200,7 +205,7 @@ inline void CGPointSet(CGPoint *v, float x, float y){
 }
 
 - (void) draw{
-    if (reset && [path count] > 0) {
+    if ((reset && [path count] > 0) || (self.autoDim && _willPop)) {
         [self pop:1];
         if ([path count] < 3) {
             [self clear];
@@ -210,6 +215,8 @@ inline void CGPointSet(CGPoint *v, float x, float y){
     if ([path count] < 3) {
         return;
     }
+    
+    _willPop = YES;
 	
     glDisableClientState(GL_COLOR_ARRAY);
     NSAssert(_texture, @"NO TEXTURE SET");
@@ -220,4 +227,10 @@ inline void CGPointSet(CGPoint *v, float x, float y){
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 2*[path count]-2);
 	glEnableClientState(GL_COLOR_ARRAY);
 }
+
+- (void) finish
+{
+    _finish = YES;
+}
+
 @end
