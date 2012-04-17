@@ -44,10 +44,13 @@ inline void f1(CGPoint p1, CGPoint p2, float d, CGPoint *o1, CGPoint *o2);
 	BOOL reset;
 	CCTexture2D *_texture;	
 	float width;
+    BOOL _finish;
+    BOOL _willPop;
 }
 @property (readonly)unsigned int pointLimit;
 @property(retain) CCTexture2D *texture;
 @property(nonatomic) float width;
+@property (nonatomic, assign) BOOL autoDim;
 
 + (id) bladeWithMaximumPoint:(int) limit;
 - (id) initWithMaximumPoint:(int) limit;
@@ -56,4 +59,5 @@ inline void f1(CGPoint p1, CGPoint p2, float d, CGPoint *o1, CGPoint *o2);
 - (void) clear;
 - (void) reset;
 - (void) dim:(BOOL) dim;
+- (void) finish;
 @end
