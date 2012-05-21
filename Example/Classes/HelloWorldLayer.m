@@ -11,7 +11,7 @@
 #import "HelloWorldLayer.h"
 
 // Needed to obtain the Navigation Controller
-#import "AppDelegate.h"
+#import "ExampleAppDelegate.h"
 
 #pragma mark - HelloWorldLayer
 
@@ -69,7 +69,7 @@
 			GKAchievementViewController *achivementViewController = [[GKAchievementViewController alloc] init];
 			achivementViewController.achievementDelegate = self;
 			
-			AppController *app = (AppController*) [[UIApplication sharedApplication] delegate];
+			ExampleAppDelegate *app = (ExampleAppDelegate*) [[UIApplication sharedApplication] delegate];
 			
 			[[app navController] presentModalViewController:achivementViewController animated:YES];
 			
@@ -84,7 +84,7 @@
 			GKLeaderboardViewController *leaderboardViewController = [[GKLeaderboardViewController alloc] init];
 			leaderboardViewController.leaderboardDelegate = self;
 			
-			AppController *app = (AppController*) [[UIApplication sharedApplication] delegate];
+			ExampleAppDelegate *app = (ExampleAppDelegate*) [[UIApplication sharedApplication] delegate];
 			
 			[[app navController] presentModalViewController:leaderboardViewController animated:YES];
 			
@@ -119,13 +119,13 @@
 
 -(void) achievementViewControllerDidFinish:(GKAchievementViewController *)viewController
 {
-	AppController *app = (AppController*) [[UIApplication sharedApplication] delegate];
+	ExampleAppDelegate *app = (ExampleAppDelegate*) [[UIApplication sharedApplication] delegate];
 	[[app navController] dismissModalViewControllerAnimated:YES];
 }
 
 -(void) leaderboardViewControllerDidFinish:(GKLeaderboardViewController *)viewController
 {
-	AppController *app = (AppController*) [[UIApplication sharedApplication] delegate];
+	ExampleAppDelegate *app = (ExampleAppDelegate*) [[UIApplication sharedApplication] delegate];
 	[[app navController] dismissModalViewControllerAnimated:YES];
 }
 @end

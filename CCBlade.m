@@ -1,5 +1,5 @@
 /*
- * cocos2d+ext for iPhone
+ * CCBlade for iPhone
  *
  * Copyright (c) 2011 - Ngo Duc Hiep
  *
@@ -71,7 +71,10 @@ inline void CGPointSet(CGPoint *v, float x, float y){
 
 - (id) initWithMaximumPoint:(int) limit{
     self = [super init];
-        
+    
+    // shader program
+    self.shaderProgram = [[CCShaderCache sharedShaderCache] programForKey:kCCShader_PositionTexture];
+    
     pointLimit = limit;
 	self.width = 5;
 	
@@ -79,10 +82,10 @@ inline void CGPointSet(CGPoint *v, float x, float y){
     coordinates = (CGPoint *)calloc(2*limit+5, sizeof(coordinates[0]));
     
     CGPointSet(coordinates+0, 0.00, 0.5);
-    reset = NO;
+    finish = NO;
     
     path = [[NSMutableArray alloc] init];
-
+    
     return self;
 }
 
@@ -129,28 +132,27 @@ inline void CGPointSet(CGPoint *v, float x, float y){
 }
 
 - (void) setWidth:(float)width_{
-    width = width_ * CC_CONTENT_SCALE_FACTOR();
+    width = width_ ;//* CC_CONTENT_SCALE_FACTOR();
 }
 
 #define DISTANCE_TO_INTERPOLATE 10
 
-- (void) push:(CGPoint) v{
-    _willPop = NO;
-    
-	if (reset) {
+- (void) push:(CGPoint) v{    
+	if (finish) {
 		return;
 	}
     if (CC_CONTENT_SCALE_FACTOR() != 1.0f) {
-        v = ccpMult(v, CC_CONTENT_SCALE_FACTOR());
+        //v = ccpMult(v, CC_CONTENT_SCALE_FACTOR());
     }
-
+    
 #if USE_LAGRANGE
-
+    
     if ([path count] == 0) {
         [path insertObject:[NSValue valueWithCGPoint:v] atIndex:0];
         return;
     }
     
+    willPop = NO;
     CGPoint first = [[path objectAtIndex:0] CGPointValue];
     if (ccpDistance(v, first) < DISTANCE_TO_INTERPOLATE) {
         [path insertObject:[NSValue valueWithCGPoint:v] atIndex:0];
@@ -173,7 +175,7 @@ inline void CGPointSet(CGPoint *v, float x, float y){
 		path.pop_back();
 	}
 #endif // !USE_LAGRANGE
-
+    
 	
 	[self populateVertices];
 }
@@ -191,46 +193,41 @@ inline void CGPointSet(CGPoint *v, float x, float y){
 
 - (void) clear{
     [path removeAllObjects];
-	reset = NO;
-    if (_finish)
-        [self removeFromParentAndCleanup:YES];
+    
 } 
 
-- (void) reset{
-	reset = TRUE;
-}
-
-- (void) dim:(BOOL) dim{
-	reset = dim;
-}
-
 - (void) draw{
-    if ((reset && [path count] > 0) || (self.autoDim && _willPop)) {
+    if (finish || (self.autoDim && willPop)) {
         [self pop:1];
-        if ([path count] < 3) {
-            [self clear];
-        }
     }
     
     if ([path count] < 3) {
+        if (finish) {
+            [self removeFromParentAndCleanup:NO];
+        }
+        
         return;
     }
     
-    _willPop = YES;
-	
-    glDisableClientState(GL_COLOR_ARRAY);
-    NSAssert(_texture, @"NO TEXTURE SET");
+    willPop = YES;
+    CC_NODE_DRAW_SETUP();
+	ccGLEnableVertexAttribs(kCCVertexAttribFlag_Position |  kCCVertexAttribFlag_TexCoords);
     
-    glBindTexture(GL_TEXTURE_2D, _texture.name);
-    glVertexPointer(2, GL_FLOAT, 0, vertices);
-    glTexCoordPointer(2, GL_FLOAT, 0, coordinates);
+    ccGLBindTexture2D( [_texture name] );
+    ccGLBlendFunc(CC_BLEND_SRC, CC_BLEND_DST);
+    
+    glVertexAttribPointer(kCCVertexAttrib_Position, 2, GL_FLOAT, GL_FALSE, 0, vertices);
+    glVertexAttribPointer(kCCVertexAttrib_TexCoords, 2, GL_FLOAT, GL_FALSE, 0, coordinates);
+    
+    
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 2*[path count]-2);
-	glEnableClientState(GL_COLOR_ARRAY);
+	
+    CC_INCREMENT_GL_DRAWS(1);
 }
 
 - (void) finish
 {
-    _finish = YES;
+    finish = YES;
 }
 
 @end

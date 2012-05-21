@@ -1,5 +1,5 @@
 /*
- * cocos2d+ext for iPhone
+ * CCBlade for iPhone
  *
  * Copyright (c) 2011 - Ngo Duc Hiep
  *
@@ -41,23 +41,19 @@ inline void f1(CGPoint p1, CGPoint p2, float d, CGPoint *o1, CGPoint *o2);
 	int count;
 	CGPoint *vertices;
 	CGPoint *coordinates;
-	BOOL reset;
-	CCTexture2D *_texture;	
+	CCTexture2D *texture;	
 	float width;
-    BOOL _finish;
-    BOOL _willPop;
+    BOOL finish;
+    BOOL willPop;
 }
-@property (readonly)unsigned int pointLimit;
+@property (readonly) unsigned int pointLimit;
 @property(retain) CCTexture2D *texture;
 @property(nonatomic) float width;
-@property (nonatomic, assign) BOOL autoDim;
+@property (nonatomic) BOOL autoDim;
 
 + (id) bladeWithMaximumPoint:(int) limit;
 - (id) initWithMaximumPoint:(int) limit;
 - (void) push:(CGPoint) v;
 - (void) pop:(int) n;
-- (void) clear;
-- (void) reset;
-- (void) dim:(BOOL) dim;
 - (void) finish;
 @end

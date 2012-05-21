@@ -25,26 +25,24 @@
 
 #import "TouchTrailLayer.h"
 
-void releaseBlade(CFAllocatorRef allocator, const void *value)
-{
-    [(CCBlade*)value finish];
-}
-
-CFDictionaryValueCallBacks valueCallbacks = {
-    0,
-    NULL,
-    releaseBlade,
-    NULL,
-    NULL
-};
-
 @implementation TouchTrailLayer
 
 - (id) init{
 	self = [super init];
 	isTouchEnabled_ = 1;
-    map = CFDictionaryCreateMutable(NULL,0,NULL,&valueCallbacks);
+    map = CFDictionaryCreateMutable(NULL,0,NULL,NULL);
+    CCSprite *bg = [CCSprite spriteWithFile:@"Default.png"];
+    bg.rotation = 90;
+    bg.position = ccp(240,160);
+    [self addChild:bg];
+    
 	return self;
+}
+
++ (CCScene *) scene{
+    CCScene *scene = [CCScene node];
+    [scene addChild:[self node]];
+    return scene;
 }
 
 - (void) ccTouchesBegan:(NSSet *) touches withEvent:(UIEvent *) event{
@@ -75,7 +73,7 @@ CFDictionaryValueCallBacks valueCallbacks = {
 - (void) ccTouchesEnded:(NSSet *) touches withEvent:(UIEvent *) event{
 	for (UITouch *touch in touches) {
 		CCBlade *w = (CCBlade *)CFDictionaryGetValue(map, touch);
-		[w dim:YES];
+        [w finish];
         CFDictionaryRemoveValue(map,touch);
 	}
 }

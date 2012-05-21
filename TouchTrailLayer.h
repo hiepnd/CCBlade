@@ -31,4 +31,5 @@
     CFMutableDictionaryRef map;
 }
 
++ (CCScene *) scene;
 @end
