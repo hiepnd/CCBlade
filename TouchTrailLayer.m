@@ -52,7 +52,7 @@
         int rand = arc4random() % 3 + 1;
 		w.texture = [[CCTextureCache sharedTextureCache] addImage:[NSString stringWithFormat:@"streak%d.png",rand]];
         
-        CFDictionaryAddValue(map,touch,w);
+        CFDictionaryAddValue(map,(__bridge const void *)(touch),(__bridge void*)w);
         
 		[self addChild:w];
 		CGPoint pos = [touch locationInView:touch.view];
@@ -63,7 +63,7 @@
 
 - (void) ccTouchesMoved:(NSSet *) touches withEvent:(UIEvent *) event{
 	for (UITouch *touch in touches) {
-		CCBlade *w = (CCBlade *)CFDictionaryGetValue(map, touch);
+		CCBlade *w = (CCBlade *)CFDictionaryGetValue(map, (__bridge const void *)(touch));
 		CGPoint pos = [touch locationInView:touch.view];
 		pos = [[CCDirector sharedDirector] convertToGL:pos];
 		[w push:pos];
@@ -72,14 +72,13 @@
 
 - (void) ccTouchesEnded:(NSSet *) touches withEvent:(UIEvent *) event{
 	for (UITouch *touch in touches) {
-		CCBlade *w = (CCBlade *)CFDictionaryGetValue(map, touch);
+		CCBlade *w = (CCBlade *)CFDictionaryGetValue(map, (__bridge const void *)(touch));
         [w finish];
-        CFDictionaryRemoveValue(map,touch);
+        CFDictionaryRemoveValue(map,(__bridge const void *)(touch));
 	}
 }
 
 - (void) dealloc{
     CFRelease(map);
-    [super dealloc];
 }
 @end

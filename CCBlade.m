@@ -66,7 +66,7 @@ inline void CGPointSet(CGPoint *v, float x, float y){
 @synthesize autoDim;
 
 + (id) bladeWithMaximumPoint:(int) limit{
-    return [[[self alloc] initWithMaximumPoint:limit] autorelease];    
+    return [[self alloc] initWithMaximumPoint:limit];    
 }
 
 - (id) initWithMaximumPoint:(int) limit{
@@ -90,12 +90,9 @@ inline void CGPointSet(CGPoint *v, float x, float y){
 }
 
 - (void) dealloc{
-    [_texture release];
     free(vertices);
     free(coordinates);
     
-    [path release];	
-	[super dealloc];
 }
 
 - (void) populateVertices{
