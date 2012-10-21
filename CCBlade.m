@@ -1,5 +1,5 @@
 /*
- * CCBlade for iPhone
+ * cocos2d+ext for iPhone
  *
  * Copyright (c) 2011 - Ngo Duc Hiep
  *
@@ -9,10 +9,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -69,11 +69,10 @@ inline void CGPointSet(CGPoint *v, float x, float y){
     return [[self alloc] initWithMaximumPoint:limit];    
 }
 
+#define POP_TIME_INTERVAL 1./60.
+
 - (id) initWithMaximumPoint:(int) limit{
     self = [super init];
-    
-    // shader program
-    self.shaderProgram = [[CCShaderCache sharedShaderCache] programForKey:kCCShader_PositionTexture];
     
     pointLimit = limit;
 	self.width = 5;
@@ -82,9 +81,16 @@ inline void CGPointSet(CGPoint *v, float x, float y){
     coordinates = (CGPoint *)calloc(2*limit+5, sizeof(coordinates[0]));
     
     CGPointSet(coordinates+0, 0.00, 0.5);
-    finish = NO;
+    reset = NO;
     
     path = [[NSMutableArray alloc] init];
+    
+#if USE_UPDATE_FOR_POP
+    popTimeInterval = POP_TIME_INTERVAL;
+    
+    timeSinceLastPop = 0;
+    [self scheduleUpdateWithPriority:0];
+#endif
     
     return self;
 }
@@ -113,7 +119,7 @@ inline void CGPointSet(CGPoint *v, float x, float y){
 		it = [[path objectAtIndex:i+1] CGPointValue];
 	}
     
-    CGPointSet(coordinates+1, 0.25, 1.0); 
+    CGPointSet(coordinates+1, 0.25, 1.0);
 	CGPointSet(coordinates+2, 0.25, 0.0);
 	
 	vertices[2*[path count]-3] = it;
@@ -134,8 +140,10 @@ inline void CGPointSet(CGPoint *v, float x, float y){
 
 #define DISTANCE_TO_INTERPOLATE 10
 
-- (void) push:(CGPoint) v{    
-	if (finish) {
+- (void) push:(CGPoint) v{
+    _willPop = NO;
+    
+	if (reset) {
 		return;
 	}
     if (CC_CONTENT_SCALE_FACTOR() != 1.0f) {
@@ -149,7 +157,6 @@ inline void CGPointSet(CGPoint *v, float x, float y){
         return;
     }
     
-    willPop = NO;
     CGPoint first = [[path objectAtIndex:0] CGPointValue];
     if (ccpDistance(v, first) < DISTANCE_TO_INTERPOLATE) {
         [path insertObject:[NSValue valueWithCGPoint:v] atIndex:0];
@@ -190,19 +197,62 @@ inline void CGPointSet(CGPoint *v, float x, float y){
 
 - (void) clear{
     [path removeAllObjects];
-    
-} 
+	reset = NO;
+    if (_finish)
+        [self removeFromParentAndCleanup:YES];
+}
 
-- (void) draw{
-    if (finish || (self.autoDim && willPop)) {
-        [self pop:1];
-    }
+- (void) reset{
+	reset = TRUE;
+}
+
+- (void) dim:(BOOL) dim{
+	reset = dim;
+}
+
+- (void) update:(ccTime)dt {
     
-    if ([path count] < 3) {
-        if (finish) {
-            [self removeFromParentAndCleanup:NO];
+    timeSinceLastPop += dt;
+    
+    float precision = 1./60.;
+    float roundedTimeSinceLastPop = precision * roundf(timeSinceLastPop/precision); // helps because fps flucuate around 1./60.
+    
+    int numberOfPops = (int)  (roundedTimeSinceLastPop/popTimeInterval) ;
+    timeSinceLastPop = timeSinceLastPop - numberOfPops * popTimeInterval;
+    
+    for (int pop = 0; pop < numberOfPops; pop++) {
+        
+        if ((reset && [path count] > 0) || (self.autoDim && _willPop)) {
+            [self pop:1];
+            if ([path count] < 3) {
+                [self clear];
+                if (_finish) {
+                    return; // if we continue self will have been deallocated
+                }
+            }
         }
         
+    }
+}
+
+- (void) draw{
+    
+#if !USE_UPDATE_FOR_POP
+    if ((reset && [path count] > 0) || (self.autoDim && _willPop)) {
+        [self pop:1];
+        if ([path count] < 3) {
+            [self clear];
+            if (_finish) {
+                return; // if we continue self will have been deallocated
+            }
+        }
+    }
+#endif
+    
+    if(path == nil)
+        return;
+    
+    if ([path count] < 3) {
         return;
     }
     
@@ -224,7 +274,7 @@ inline void CGPointSet(CGPoint *v, float x, float y){
 
 - (void) finish
 {
-    finish = YES;
+    _finish = YES;
 }
 
 @end
