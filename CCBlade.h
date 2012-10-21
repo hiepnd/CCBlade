@@ -37,14 +37,10 @@ inline void CGPointSet(CGPoint *v, float x, float y);
 inline void f1(CGPoint p1, CGPoint p2, float d, CGPoint *o1, CGPoint *o2);
 
 @interface CCBlade : CCNode {
-    NSMutableArray *path;
-	unsigned int pointLimit;
 	int count;
 	CGPoint *vertices;
 	CGPoint *coordinates;
 	BOOL reset;
-	CCTexture2D *_texture;
-	float width;
     BOOL _finish;
     BOOL _willPop;
     
@@ -55,6 +51,7 @@ inline void f1(CGPoint p1, CGPoint p2, float d, CGPoint *o1, CGPoint *o2);
 @property(strong) CCTexture2D *texture;
 @property(nonatomic) float width;
 @property (nonatomic) BOOL autoDim;
+@property(nonatomic,strong)NSMutableArray *path;
 
 + (id) bladeWithMaximumPoint:(int) limit;
 - (id) initWithMaximumPoint:(int) limit;

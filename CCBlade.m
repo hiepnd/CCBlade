@@ -60,10 +60,6 @@ inline void CGPointSet(CGPoint *v, float x, float y){
 }
 
 @implementation CCBlade
-@synthesize texture = _texture;
-@synthesize pointLimit;
-@synthesize width;
-@synthesize autoDim;
 
 + (id) bladeWithMaximumPoint:(int) limit{
     return [[self alloc] initWithMaximumPoint:limit];    
@@ -74,8 +70,8 @@ inline void CGPointSet(CGPoint *v, float x, float y){
 - (id) initWithMaximumPoint:(int) limit{
     self = [super init];
     
-    pointLimit = limit;
-	self.width = 5;
+    _pointLimit = limit;
+	_width = 5;
 	
     vertices = (CGPoint *)calloc(2*limit+5, sizeof(vertices[0]));
     coordinates = (CGPoint *)calloc(2*limit+5, sizeof(coordinates[0]));
@@ -83,7 +79,7 @@ inline void CGPointSet(CGPoint *v, float x, float y){
     CGPointSet(coordinates+0, 0.00, 0.5);
     reset = NO;
     
-    path = [[NSMutableArray alloc] init];
+    _path = [[NSMutableArray alloc] init];
     
 #if USE_UPDATE_FOR_POP
     popTimeInterval = POP_TIME_INTERVAL;
@@ -91,6 +87,8 @@ inline void CGPointSet(CGPoint *v, float x, float y){
     timeSinceLastPop = 0;
     [self scheduleUpdateWithPriority:0];
 #endif
+    
+    self.shaderProgram = [[CCShaderCache sharedShaderCache] programForKey:kCCShader_PositionTexture];
     
     return self;
 }
@@ -102,40 +100,40 @@ inline void CGPointSet(CGPoint *v, float x, float y){
 }
 
 - (void) populateVertices{
-    vertices[0] = [[path objectAtIndex:0] CGPointValue];
+    vertices[0] = [[_path objectAtIndex:0] CGPointValue];
     CGPoint pre = vertices[0];
     
     unsigned int i = 0;
-    CGPoint it = [[path objectAtIndex:1] CGPointValue];
-	float dd = width / [path count];
-	while (i < [path count] - 2){
-		f1(pre, it, width - i * dd , vertices+2*i+1, vertices+2*i+2);
+    CGPoint it = [[_path objectAtIndex:1] CGPointValue];
+	float dd = _width / [_path count];
+	while (i < [_path count] - 2){
+		f1(pre, it, _width - i * dd , vertices+2*i+1, vertices+2*i+2);
 		CGPointSet(coordinates+2*i+1, .5, 1.0);
 		CGPointSet(coordinates+2*i+2, .5, 0.0);
 		
 		i++;
 		pre = it;
 		
-		it = [[path objectAtIndex:i+1] CGPointValue];
+		it = [[_path objectAtIndex:i+1] CGPointValue];
 	}
     
     CGPointSet(coordinates+1, 0.25, 1.0);
 	CGPointSet(coordinates+2, 0.25, 0.0);
 	
-	vertices[2*[path count]-3] = it;
-	CGPointSet(coordinates+2*[path count]-3, 0.75, 0.5);
+	vertices[2*[_path count]-3] = it;
+	CGPointSet(coordinates+2*[_path count]-3, 0.75, 0.5);
 }
 
 - (void) shift{
-	int index = 2 * pointLimit - 1;
+	int index = 2 * _pointLimit - 1;
 	for (int i = index; i > 3; i -= 2) {
 		vertices[i] = vertices[i-2];
 		vertices[i-1] = vertices[i-3];
 	}
 }
 
-- (void) setWidth:(float)width_{
-    width = width_ ;//* CC_CONTENT_SCALE_FACTOR();
+- (void) set_width:(float)newWidth{
+    _width = newWidth ;//* CC_CONTENT_SCALE_FACTOR();
 }
 
 #define DISTANCE_TO_INTERPOLATE 10
@@ -146,37 +144,34 @@ inline void CGPointSet(CGPoint *v, float x, float y){
 	if (reset) {
 		return;
 	}
-    if (CC_CONTENT_SCALE_FACTOR() != 1.0f) {
-        //v = ccpMult(v, CC_CONTENT_SCALE_FACTOR());
-    }
     
 #if USE_LAGRANGE
     
-    if ([path count] == 0) {
-        [path insertObject:[NSValue valueWithCGPoint:v] atIndex:0];
+    if ([_path count] == 0) {
+        [_path insertObject:[NSValue valueWithCGPoint:v] atIndex:0];
         return;
     }
     
-    CGPoint first = [[path objectAtIndex:0] CGPointValue];
+    CGPoint first = [[_path objectAtIndex:0] CGPointValue];
     if (ccpDistance(v, first) < DISTANCE_TO_INTERPOLATE) {
-        [path insertObject:[NSValue valueWithCGPoint:v] atIndex:0];
-        if ([path count] > pointLimit) {
-            [path removeLastObject];
+        [_path insertObject:[NSValue valueWithCGPoint:v] atIndex:0];
+        if ([_path count] > _pointLimit) {
+            [_path removeLastObject];
         }
     }else{
         int num = ccpDistance(v, first) / DISTANCE_TO_INTERPOLATE;
         CGPoint iv = ccpMult(ccpSub(v, first), (float)1./(num + 1));
 		for (int i = 1; i <= num + 1; i++) {
-            [path insertObject:[NSValue valueWithCGPoint:ccpAdd(first, ccpMult(iv, i))] atIndex:0];
+            [_path insertObject:[NSValue valueWithCGPoint:ccpAdd(first, ccpMult(iv, i))] atIndex:0];
 		}
-		while ([path count] > pointLimit) {
-			[path removeLastObject];
+		while ([_path count] > _pointLimit) {
+			[_path removeLastObject];
 		}
     }
 #else // !USE_LAGRANGE
-	path.push_front(v);
-	if (path.size() > pointLimit) {
-		path.pop_back();
+	_path.push_front(v);
+	if (_path.size() > pointLimit) {
+		_path.pop_back();
 	}
 #endif // !USE_LAGRANGE
     
@@ -185,18 +180,18 @@ inline void CGPointSet(CGPoint *v, float x, float y){
 }
 
 - (void) pop:(int) n{
-    while ([path count] > 0 && n > 0) {
-        [path removeLastObject];
+    while ([_path count] > 0 && n > 0) {
+        [_path removeLastObject];
         n--;
     }
     
-    if ([path count] > 2) {
+    if ([_path count] > 2) {
         [self populateVertices];
     }
 }
 
 - (void) clear{
-    [path removeAllObjects];
+    [_path removeAllObjects];
 	reset = NO;
     if (_finish)
         [self removeFromParentAndCleanup:YES];
@@ -222,9 +217,9 @@ inline void CGPointSet(CGPoint *v, float x, float y){
     
     for (int pop = 0; pop < numberOfPops; pop++) {
         
-        if ((reset && [path count] > 0) || (self.autoDim && _willPop)) {
+        if ((reset && [_path count] > 0) || (self.autoDim && _willPop)) {
             [self pop:1];
-            if ([path count] < 3) {
+            if ([_path count] < 3) {
                 [self clear];
                 if (_finish) {
                     return; // if we continue self will have been deallocated
@@ -238,9 +233,9 @@ inline void CGPointSet(CGPoint *v, float x, float y){
 - (void) draw{
     
 #if !USE_UPDATE_FOR_POP
-    if ((reset && [path count] > 0) || (self.autoDim && _willPop)) {
+    if ((reset && [_path count] > 0) || (self.autoDim && _willPop)) {
         [self pop:1];
-        if ([path count] < 3) {
+        if ([_path count] < 3) {
             [self clear];
             if (_finish) {
                 return; // if we continue self will have been deallocated
@@ -249,14 +244,14 @@ inline void CGPointSet(CGPoint *v, float x, float y){
     }
 #endif
     
-    if(path == nil)
+    if(_path == nil)
         return;
     
-    if ([path count] < 3) {
+    if ([_path count] < 3) {
         return;
     }
     
-    willPop = YES;
+    _willPop = YES;
     CC_NODE_DRAW_SETUP();
 	ccGLEnableVertexAttribs(kCCVertexAttribFlag_Position |  kCCVertexAttribFlag_TexCoords);
     
@@ -267,7 +262,7 @@ inline void CGPointSet(CGPoint *v, float x, float y){
     glVertexAttribPointer(kCCVertexAttrib_TexCoords, 2, GL_FLOAT, GL_FALSE, 0, coordinates);
     
     
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 2*[path count]-2);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 2*[_path count]-2);
 	
     CC_INCREMENT_GL_DRAWS(1);
 }
