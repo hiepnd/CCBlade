@@ -25,26 +25,24 @@
 
 #import "TouchTrailLayer.h"
 
-void releaseBlade(CFAllocatorRef allocator, const void *value)
-{
-    [(CCBlade*)value finish];
-}
-
-CFDictionaryValueCallBacks valueCallbacks = {
-    0,
-    NULL,
-    releaseBlade,
-    NULL,
-    NULL
-};
-
 @implementation TouchTrailLayer
 
 - (id) init{
 	self = [super init];
 	isTouchEnabled_ = 1;
-    map = CFDictionaryCreateMutable(NULL,0,NULL,&valueCallbacks);
+    map = CFDictionaryCreateMutable(NULL,0,NULL,NULL);
+    CCSprite *bg = [CCSprite spriteWithFile:@"Default.png"];
+    bg.rotation = 90;
+    bg.position = ccp(240,160);
+    [self addChild:bg];
+    
 	return self;
+}
+
++ (CCScene *) scene{
+    CCScene *scene = [CCScene node];
+    [scene addChild:[self node]];
+    return scene;
 }
 
 - (void) ccTouchesBegan:(NSSet *) touches withEvent:(UIEvent *) event{
@@ -54,7 +52,7 @@ CFDictionaryValueCallBacks valueCallbacks = {
         int rand = arc4random() % 3 + 1;
 		w.texture = [[CCTextureCache sharedTextureCache] addImage:[NSString stringWithFormat:@"streak%d.png",rand]];
         
-        CFDictionaryAddValue(map,touch,w);
+        CFDictionaryAddValue(map,(__bridge const void *)(touch),(__bridge void*)w);
         
 		[self addChild:w];
 		CGPoint pos = [touch locationInView:touch.view];
@@ -65,7 +63,7 @@ CFDictionaryValueCallBacks valueCallbacks = {
 
 - (void) ccTouchesMoved:(NSSet *) touches withEvent:(UIEvent *) event{
 	for (UITouch *touch in touches) {
-		CCBlade *w = (CCBlade *)CFDictionaryGetValue(map, touch);
+		CCBlade *w = (CCBlade *)CFDictionaryGetValue(map, (__bridge const void *)(touch));
 		CGPoint pos = [touch locationInView:touch.view];
 		pos = [[CCDirector sharedDirector] convertToGL:pos];
 		[w push:pos];
@@ -74,14 +72,13 @@ CFDictionaryValueCallBacks valueCallbacks = {
 
 - (void) ccTouchesEnded:(NSSet *) touches withEvent:(UIEvent *) event{
 	for (UITouch *touch in touches) {
-		CCBlade *w = (CCBlade *)CFDictionaryGetValue(map, touch);
-		[w dim:YES];
-        CFDictionaryRemoveValue(map,touch);
+		CCBlade *w = (CCBlade *)CFDictionaryGetValue(map, (__bridge const void *)(touch));
+        [w finish];
+        CFDictionaryRemoveValue(map,(__bridge const void *)(touch));
 	}
 }
 
 - (void) dealloc{
     CFRelease(map);
-    [super dealloc];
 }
 @end
